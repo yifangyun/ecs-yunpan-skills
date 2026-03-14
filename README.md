@@ -16,7 +16,7 @@
 *   **资源共享** — 生成分享链接、获取下载链接
 *   **账号信息** — 查询当前用户详情、空间用量等
 
-> 👉 [查看详细文档与使用指南](./360-cloud-disk/README.md)
+> 👉 [查看详细文档与使用指南](./360-cloud-disk/SKILL.md)
 
 *(后续将持续新增更多场景化技能)*
 
@@ -59,27 +59,15 @@ python3 executor.py user-info
 
 如果返回了您的账户信息，说明配置成功。
 
-### 5. 接入 AI 客户端 (以 OpenClaw 为例)
+### 5. 接入 AI 客户端
 
-#### 方式一：通过 GitHub 快速安装（推荐）
+将以下仓库地址发送给您使用的 AI 客户端（如 OpenClaw、Cursor、Claude Desktop 等），即可由 AI 自动完成安装：
 
-1. 在 OpenClaw 客户端中点击右上角设置图标（⚙️），进入「Skills」管理页面
-2. 点击「Install Skill」
-3. 选择 **GitHub Repository** 选项
-4. 在输入框中输入本仓库的 Skill 路径：
-   `https://github.com/yifangyun/ecs-yunpan-skills/tree/main/360-cloud-disk`
-5. 点击 Install 等待安装完成
-6. 在配置页面中，找到 `API_KEY` 字段，填入您在[控制台](https://www.yunpan.com/v2/mcp)获取的专属密钥
+```
+https://github.com/yifangyun/ecs-yunpan-skills/tree/main
+```
 
-#### 方式二：本地目录安装
-
-如果您已经通过上文完成了本地配置（包含环境和依赖安装）：
-1. 在 OpenClaw 客户端中点击「Install Skill」
-2. 选择 **Local Directory** 选项
-3. 浏览并选择本地的 `ecs-yunpan-skills/360-cloud-disk` 目录
-4. 点击 Install 即可完成接入
-
-*(其他客户端如 Cursor、Claude Desktop 等的接入方式，请参考对应客户端官方文档，或配置本地 `executor.py` 脚本执行路径)*
+AI 客户端会自动识别仓库中的技能文件，按照引导完成配置后即可开始使用。
 
 ---
 
