@@ -1,6 +1,6 @@
 # 360AI云盘技能库 (ECS Yunpan Skills)
 
-这是一个 360AI云盘 的技能（Skills）集合仓库，旨在为 AI 客户端（如 OpenClaw、Cursor、Claude Desktop、Windsurf 等）提供开箱即用的云盘操作能力。
+这是一个 360AI云盘 的技能（Skills）集合仓库，旨在为 AI 客户端（如 OpenClaw、Cursor、Claude Desktop 等）提供开箱即用的云盘操作能力。
 
 通过这些技能，AI 助手可以直接帮助您管理 360AI云盘 中的文件，包括查询、上传、下载、分享等操作，无需手动登录网页或客户端。
 
