@@ -2,17 +2,6 @@
 name: 360-ai-cloud-disk
 description: "360 AI云盘文件管理工具"
 license: MIT
-metadata:
-  version: 0.7.3
-  author: 360 AI Cloud
-  category: utility
-  python-tools: executor.py
-  updated: 2026-03-14
-  openclaw:
-    emoji: ☁️
-    primaryEnv: API_KEY
-    requires:
-      env: ["API_KEY"]
 ---
 
 # 360 AI Cloud Disk

@@ -163,7 +163,7 @@ python3 executor.py file-share paths=value
 
 ```bash
 
-python3 executor.py file-save upload_path=/AI为我下载/20260314/
+python3 executor.py file-save upload_path=/AI为我下载/20260319/
 
 ```
 
