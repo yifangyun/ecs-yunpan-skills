@@ -156,9 +156,8 @@ class MCPExecutor:
         """通过 HTTP 模式执行工具调用
         
         鉴权机制（优先级从高到低）：
-        1. 动态环境变量: MCP_API_KEY, MCP_ECS_ENV, MCP_SUB_CHANNEL
-        2. 静态环境变量: API_KEY, ECS_ENV, SUB_CHANNEL
-        3. .env 文件中的配置
+        1. 环境变量: API_KEY, ECS_ENV, SUB_CHANNEL
+        2. .env 文件中的配置
         
         传递方式：通过 HTTP Header 传递（更安全，不暴露在 URL 中）
         """
@@ -174,11 +173,11 @@ class MCPExecutor:
             
             url = base_url
             
-            # 获取鉴权信息（支持动态覆盖）
-            # 优先级: MCP_* 环境变量 > 普通环境变量 > self.mcp_env（来自 .env）
-            api_key = os.getenv("MCP_API_KEY") or os.getenv("API_KEY") or self.mcp_env.get("API_KEY", "")
-            ecs_env = os.getenv("MCP_ECS_ENV") or os.getenv("ECS_ENV") or self.mcp_env.get("ECS_ENV", "prod")
-            sub_channel = os.getenv("MCP_SUB_CHANNEL") or os.getenv("SUB_CHANNEL") or self.mcp_env.get("SUB_CHANNEL", "open")
+            # 获取鉴权信息
+            # 优先级: 环境变量 > self.mcp_env（来自 .env）
+            api_key = os.getenv("API_KEY") or self.mcp_env.get("API_KEY", "")
+            ecs_env = os.getenv("ECS_ENV") or self.mcp_env.get("ECS_ENV", "prod")
+            sub_channel = os.getenv("SUB_CHANNEL") or self.mcp_env.get("SUB_CHANNEL", "open")
             
             # 构建请求头（使用 Header 传递鉴权信息，比 URL 参数更安全）
             headers = {
