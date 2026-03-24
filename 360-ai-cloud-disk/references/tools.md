@@ -31,7 +31,7 @@
 |------|------|------|------|
 | `page` | `number` | ❌ 否 | 页码，默认从0开始。 |
 | `page_size` | `number` | ❌ 否 | 每页显示的条目数，默认50条。 |
-| `path` | `string` | ❌ 否 | 要查询的云盘路径，默认为根目录'/' |
+| `path` | `string` | ❌ 否 | 云盘路径，必须以/开头和结尾，如 /folder/subfolder/，根目录为 / |
 
 ```bash
 python3 executor.py file-list page=1 page_size=50 path=/我的文档/

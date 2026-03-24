@@ -46,10 +46,11 @@ class MCPExecutor:
             print(f"[MCP] 使用本地模式，工作目录: {self.working_dir}")
 
         elif self.mode == "npx":
-            # npx 模式：使用远程 npm 包
+            # npx 模式：使用已安装的 npm 包
+            self._check_npx_available()
             self.mcp_command = "npx"
             npx_package = os.getenv("MCP_NPX_PACKAGE", "@aicloud360/mcp-server-disk@latest")
-            self.mcp_args = ["-y", npx_package, "--stdio"]
+            self.mcp_args = [npx_package, "--stdio"]
             self.working_dir = None  # npx 不需要工作目录
             print(f"[MCP] 使用 npx 模式，包名: {npx_package}")
 
@@ -63,6 +64,93 @@ class MCPExecutor:
 
         else:
             raise ValueError(f"不支持的 MCP_MODE: {self.mode}，支持值：local/npx/http")
+
+    def _check_npx_available(self):
+        """检查 npx 是否可用"""
+        try:
+            result = subprocess.run(
+                ["npx", "--version"],
+                capture_output=True, text=True, timeout=10
+            )
+            if result.returncode != 0:
+                raise FileNotFoundError()
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            raise RuntimeError(
+                "npx 未安装或不可用。请先安装 Node.js (>=18)，"
+                "或切换到 HTTP 模式：MCP_MODE=http"
+            )
+
+    def _execute_tool_stdio(self, tool_name: str, **kwargs) -> Dict[str, Any]:
+        """通过 stdio 模式执行工具调用（local/npx 共用）"""
+        self._start_process()
+
+        request = {
+            "jsonrpc": "2.0",
+            "id": self.id_counter,
+            "method": "tools/call",
+            "params": {
+                "name": tool_name,
+                "arguments": kwargs
+            }
+        }
+        self.id_counter += 1
+
+        self.process.stdin.write(json.dumps(request) + "\n")
+        self.process.stdin.flush()
+
+        response = self._read_response()
+
+        if "error" in response:
+            return {
+                "success": False,
+                "error": response["error"]
+            }
+
+        return {
+            "success": True,
+            "result": response.get("result", {})
+        }
+
+    def _execute_upload_with_npx_fallback(self, tool_name: str, **kwargs) -> Dict[str, Any]:
+        """HTTP 模式下对本地文件工具进行 npx 降级（不污染当前实例状态）"""
+        fallback = os.getenv("MCP_UPLOAD_FALLBACK", "npx").lower()
+        if fallback == "off":
+            return {
+                "success": False,
+                "error": "ERR_UPLOAD_FALLBACK_DISABLED: 当前已禁用 HTTP->npx 自动降级（MCP_UPLOAD_FALLBACK=off）"
+            }
+
+        # 1) 仅检查 npx 是否可用，不要求全局安装 npm 包
+        try:
+            self._check_npx_available()
+        except RuntimeError as e:
+            return {
+                "success": False,
+                "error": f"ERR_NPX_UNAVAILABLE: 工具 {tool_name} 需要本地执行环境（npx），{str(e)}"
+            }
+
+        # 2) 使用临时执行器，避免修改当前实例 mode/command
+        npx_package = os.getenv("MCP_NPX_PACKAGE", "@aicloud360/mcp-server-disk@latest")
+        print(f"[MCP] 工具 {tool_name} 需要访问本地文件系统，临时切换 npx 执行: {npx_package}")
+
+        child = MCPExecutor()
+        child.mode = "npx"
+        child.mcp_command = "npx"
+        child.mcp_args = [npx_package, "--stdio"]
+        child.working_dir = None
+        child.process = None
+        child.id_counter = 1
+        child.mcp_env = dict(self.mcp_env)
+
+        try:
+            return child._execute_tool_stdio(tool_name, **kwargs)
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"ERR_NPX_EXEC_FAILED: npx 执行失败: {str(e)}"
+            }
+        finally:
+            child.close()
 
     def _start_process(self):
         """启动 MCP Server 进程（用于 local/npx 模式）"""
@@ -269,52 +357,16 @@ class MCPExecutor:
     def execute(self, tool_name: str, **kwargs) -> Dict[str, Any]:
         """执行 MCP 工具调用"""
         try:
-            # 针对本地文件处理工具，若当前为 HTTP 模式则自动降级到 npx 模式
+            # 针对本地文件处理工具，若当前为 HTTP 模式则需要降级到 npx 模式
             if tool_name in ["file-upload-stdio"] and self.mode == "http":
-                print(f"[MCP] 工具 {tool_name} 需要访问本地文件系统，自动切换为 npx 模式执行")
-                self.mode = "npx"
-                self.mcp_command = "npx"
-                npx_package = os.getenv("MCP_NPX_PACKAGE", "@aicloud360/mcp-server-disk@latest")
-                self.mcp_args = ["-y", npx_package, "--stdio"]
-                self.working_dir = None
+                return self._execute_upload_with_npx_fallback(tool_name, **kwargs)
 
             if self.mode == "http":
                 # HTTP 模式：使用 HTTP API
                 return self._execute_http(tool_name, **kwargs)
             else:
                 # local/npx 模式：使用 subprocess + JSON-RPC stdio
-                # 启动进程（如果尚未启动）
-                self._start_process()
-
-                # 构建 MCP 请求
-                request = {
-                    "jsonrpc": "2.0",
-                    "id": self.id_counter,
-                    "method": "tools/call",
-                    "params": {
-                        "name": tool_name,
-                        "arguments": kwargs
-                    }
-                }
-                self.id_counter += 1
-
-                # 发送请求
-                self.process.stdin.write(json.dumps(request) + "\n")
-                self.process.stdin.flush()
-
-                # 读取响应
-                response = self._read_response()
-
-                if "error" in response:
-                    return {
-                        "success": False,
-                        "error": response["error"]
-                    }
-
-                return {
-                    "success": True,
-                    "result": response.get("result", {})
-                }
+                return self._execute_tool_stdio(tool_name, **kwargs)
 
         except Exception as e:
             return {
