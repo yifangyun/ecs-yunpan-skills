@@ -7,10 +7,18 @@
 - [file-list](#file-list)
 - [file-search](#file-search)
 - [make-dir](#make-dir)
+- [file-del](#file-del)
 - [file-move](#file-move)
 - [file-rename](#file-rename)
 - [file-share](#file-share)
 - [file-save](#file-save)
+- [file-append-content](#file-append-content)
+- [detect-file-exists](#detect-file-exists)
+- [file-trans-or-copy](#file-trans-or-copy)
+- [get-node-info-by-nid](#get-node-info-by-nid)
+- [filedir-count-origin-size](#filedir-count-origin-size)
+- [file-clear-dir](#file-clear-dir)
+- [get-config](#get-config)
 - [file-upload-stdio](#file-upload-stdio)
 - [user-info](#user-info)
 - [get-download-url](#get-download-url)
@@ -64,6 +72,18 @@ python3 executor.py file-search file_category=-1 key=example_value page=1 page_s
 python3 executor.py make-dir fname=文件.txt
 ```
 
+## file-del
+
+删除云盘中的文件或文件夹。支持批量删除多个文件。
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `fname` | `string` | ✅ 是 | 要删除的文件或文件夹路径，多个文件路径用竖线(|)隔开，例如：/文件1.txt|/文件夹2/文件2.txt |
+
+```bash
+python3 executor.py file-del fname=文件.txt
+```
+
 ## file-move
 
 移动云盘中的文件或文件夹到指定位置。支持批量移动多个文件。
@@ -108,13 +128,111 @@ python3 executor.py file-share paths=/我的文档/
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `url` | `string` | ❌ 否 | 文件下载地址；与 content 互斥且二选一，必须且只能传其中一个 |
+| `url` | `string` | ❌ 否 | 文件下载地址；与 content 互斥且二选一，必须且只能传其中一个，多个url以英文竖线(|)分隔 |
 | `content` | `string` | ❌ 否 | 文件内容（建议为 MD 文本）；与 url 互斥且二选一，必须且只能传其中一个；需传用户指定的完整内容，不能省略任何部分 |
 | `upload_path` | `string` | ❌ 否 | 云盘存储路径，必须以 / 开头和结尾。如不指定，默认为 '/AI为我下载/YYYYMMDD/'（YYYYMMDD 为当天日期）。 |
 | `file_name` | `string` | ❌ 否 | 保存到云盘的文件名，不含路径。如不填写此参数代表自动解析。 |
+| `is_rename` | `number` | ❌ 否 | 同名文件处理策略：0 代表直接替换原文件；1 代表如果 upload_path 这个目录下有同名文件，会自动重命名。默认为 1。 |
 
 ```bash
-python3 executor.py file-save upload_path=/我的文档/
+python3 executor.py file-save upload_path=/我的文档/ is_rename=1
+```
+
+## file-append-content
+
+向云盘中已有的文本文件末尾追加内容
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | `string` | ✅ 是 | 文件完整路径，必须以 / 开头，例如 /test/test.txt |
+| `content` | `string` | ✅ 是 | 要追加到文件末尾的文本内容 |
+
+```bash
+python3 executor.py file-append-content path=/我的文档/ content=example_value
+```
+
+## detect-file-exists
+
+检测目标目录下是否存在同名文件（按文件名和文件大小匹配）
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | `string` | ✅ 是 | 目标目录路径，必须以 / 开头，例如 /AI为我下载/20260331/ |
+| `files` | `array` | ✅ 是 | 待检测文件列表，至少包含一个文件 |
+
+```bash
+python3 executor.py detect-file-exists path=/我的文档/ 'files=["/path/to/file.txt"]'
+```
+
+## file-trans-or-copy
+
+将一个或多个文件转移或复制到目标目录，支持同名覆盖策略
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `src_name` | `string` | ✅ 是 | 源文件完整路径，多个路径用英文竖线(|)分隔 |
+| `new_path` | `string` | ✅ 是 | 目标目录路径，必须以 / 开头 |
+| `is_delete` | `integer` | ✅ 是 | 是否删除源文件：1=转移，0=复制 |
+| `is_replace` | `integer` | ❌ 否 | 同名文件处理：0=自动重命名，1=覆盖替换 |
+| `src_ks_id` | `string` | ❌ 否 | 源文件所在群组 ks_id（可选，不参与 sign） |
+| `new_ks_id` | `string` | ❌ 否 | 目标目录所在群组 ks_id（可选，不参与 sign） |
+
+```bash
+python3 executor.py file-trans-or-copy src_name=文件.txt new_path=/我的文档/ is_delete=1 is_replace=1
+```
+
+## get-node-info-by-nid
+
+根据单个 nid 获取文件夹（知识库）节点信息，可选返回 ks_info
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `nid` | `string` | ✅ 是 | 节点 nid（仅支持文件夹/知识库） |
+| `ks_ext` | `integer` | ❌ 否 | 是否返回 ks_info：0=不返回，1=返回 |
+
+```bash
+python3 executor.py get-node-info-by-nid nid=example_value ks_ext=1
+```
+
+## filedir-count-origin-size
+
+获取目录下所有文件和文件夹（递归）的原始大小
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | `string` | ✅ 是 | 目录完整路径，必须以 / 开头 |
+
+```bash
+python3 executor.py filedir-count-origin-size path=/我的文档/
+```
+
+## file-clear-dir
+
+清空目录下文件，保留原目录（支持多个目录）
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `fname` | `string` | ✅ 是 | 目录路径，多个路径用英文竖线(|)分隔 |
+
+```bash
+python3 executor.py file-clear-dir fname=文件.txt
+```
+
+## get-config
+
+支持 INI/JSON/YAML 的配置键值与子项操作（get/set/delete/list/read/write）
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | `string` | ✅ 是 | 配置文件路径，必须以 / 开头 |
+| `command` | `string` | ✅ 是 | 操作命令 |
+| `type` | `string` | ✅ 是 | 配置文件类型 |
+| `key` | `string` | ❌ 否 | 键路径，如 a.b.c |
+| `value` | `string` | ❌ 否 | 写入值（set 场景） |
+| `content` | `string` | ❌ 否 | 文件内容（write 场景） |
+
+```bash
+python3 executor.py get-config path=/我的文档/ command=example_value type=example_value
 ```
 
 ## file-upload-stdio
