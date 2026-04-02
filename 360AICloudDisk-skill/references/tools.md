@@ -128,7 +128,7 @@ python3 executor.py file-share paths=/我的文档/
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `url` | `string` | ❌ 否 | 文件下载地址；与 content 互斥且二选一，必须且只能传其中一个，多个url以英文竖线(|)分隔 |
+| `url` | `string` | ❌ 否 | 单个文件下载地址；与 content 互斥且二选一；勿用竖线拼接多个 URL（OpenAPI 不支持，请分多次调用） |
 | `content` | `string` | ❌ 否 | 文件内容（建议为 MD 文本）；与 url 互斥且二选一，必须且只能传其中一个；需传用户指定的完整内容，不能省略任何部分 |
 | `upload_path` | `string` | ❌ 否 | 云盘存储路径，必须以 / 开头和结尾。如不指定，默认为 '/AI为我下载/YYYYMMDD/'（YYYYMMDD 为当天日期）。 |
 | `file_name` | `string` | ❌ 否 | 保存到云盘的文件名，不含路径。如不填写此参数代表自动解析。 |
@@ -208,11 +208,11 @@ python3 executor.py filedir-count-origin-size path=/我的文档/
 
 ## file-clear-dir
 
-清空目录下文件，保留原目录（支持多个目录）
+清空目录下文件，保留原目录（每次仅一个目录）
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `fname` | `string` | ✅ 是 | 目录路径，多个路径用英文竖线(|)分隔 |
+| `fname` | `string` | ✅ 是 | 单个目录完整路径，必须以 / 开头；勿用竖线拼接多个目录（OpenAPI 不支持，会报非法字符） |
 
 ```bash
 python3 executor.py file-clear-dir fname=文件.txt
