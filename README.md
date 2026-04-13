@@ -35,13 +35,11 @@
 
 ## 🔐 获取 API 密钥
 
-所有的技能包调用最终均依赖于 360 AI 云盘的开放能力，请前往 [360 AI 云盘开放平台](https://open.yunpan.360.cn) 申请您的专属 API Key 以进行鉴权。
+所有的技能包调用最终均依赖于 360 AI 云盘的开放能力，请前往 [360 AI 云盘开放平台](https://www.yunpan.com/skill) 申请您的专属 API Key 以进行鉴权。
 
 ## 🛠️ 反馈与支持
 
-遇到问题时请优先参考所选技能子目录中的参考文档（位于 `references/` 目录）。
-如有更多问题，欢迎：
-- 查阅 [官方文档中心](https://open.yunpan.360.cn)
+- 查阅 [官方文档中心](https://www.yunpan.com/skill)
 - 提交 [GitHub Issue](https://github.com/yifangyun/ecs-yunpan-skills/issues)
 
 ## 📝 许可证
