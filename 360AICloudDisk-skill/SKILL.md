@@ -35,22 +35,14 @@ python3 executor.py <tool-name> [param1=value1] [param2=value2]
 
 根据用户意图，选择对应工具执行：
 
-- 当用户需要「检测目标目录下是否存在同名文件」时，使用 `detect-file-exists`（分类：query）
-- 当用户需要「向云盘文本文件末尾追加内容」时，使用 `file-append-content`（分类：operation）
-- 当用户需要「清空目录下文件并保留原目录」时，使用 `file-clear-dir`（分类：operation）
-- 当用户需要「删除云盘文件或文件夹」时，使用 `file-del`（分类：operation）
 - 当用户需要「获取云盘文件列表」时，使用 `file-list`（分类：query）
 - 当用户需要「移动云盘中的文件或文件夹到指定位置。支持批量移动多个文件。」时，使用 `file-move`（分类：operation）
 - 当用户需要「重命名云盘中的文件或文件夹。」时，使用 `file-rename`（分类：operation）
 - 当用户需要「通过URL或文本内容保存文件到云盘」时，使用 `file-save`（分类：operation）
 - 当用户需要「在云盘中根据关键词搜索文件和文件夹，支持按文件类型筛选和分页查询。返回符合条件的文件详细信息。」时，使用 `file-search`（分类：query）
 - 当用户需要「生成云盘文件的分享链接。支持批量生成多个文件的分享链接。」时，使用 `file-share`（分类：operation）
-- 当用户需要「将文件转移或复制到目标目录，支持同名覆盖策略」时，使用 `file-trans-or-copy`（分类：operation）
 - 当用户需要「上传本地文件到云盘」时，使用 `file-upload-stdio`（分类：transfer）
-- 当用户需要「获取目录下所有文件和文件夹（递归）的原始大小」时，使用 `filedir-count-origin-size`（分类：query）
-- 当用户需要「操作 INI/JSON/YAML 配置文件键值和内容」时，使用 `get-config`（分类：operation）
 - 当用户需要「获取云盘中文件的下载链接。可以通过文件NID或路径获取。」时，使用 `get-download-url`（分类：query）
-- 当用户需要「根据单个 nid 获取文件夹（知识库）节点信息」时，使用 `get-node-info-by-nid`（分类：query）
 - 当用户需要「在云盘中创建新文件夹，支持指定路径。」时，使用 `make-dir`（分类：operation）
 - 当用户需要「获取360AI云盘用户详细信息。」时，使用 `user-info`（分类：query）
 
