@@ -10,7 +10,7 @@
 
 本仓库目前提供两种技术形态的云盘核心技能。**强烈推荐使用 CLI 技能**，它拥有更轻量的依赖和更强大的本地文件处理能力。
 
-### 1. 🌟 360 AI 云盘 CLI 技能 (`360AICloudDiskSkill`) - 【推荐使用】
+### 1. 🌟 360 AI 云盘 CLI 技能 (`360-ai-cloud-disk-cli-skill`) - 【推荐使用】
 
 基于 Node.js 命令行工具（`360disk`）直接在终端执行操作。适合在本地开发环境或支持 Shell 交互的 Agent。
 
@@ -19,9 +19,9 @@
 *   **核心优势**：原生支持管道操作、支持复杂的本地文件上传/下载编排、依赖项更轻。
 *   **配置复杂度**：低（支持 `npx @aicloud360/360-ai-cloud-disk-cli` 免安装运行，或全局安装）。
 
-> 👉 [查看 CLI 技能的安装与使用指南](./360AICloudDiskSkill/README.md)
+> 👉 [查看 CLI 技能的安装与使用指南](./360-ai-cloud-disk-cli-skill/README.md)
 
-### 2. ⚠️ 360 AI 云盘 MCP 技能 (`360AICloudDisk-skill`) - 【停止更新】
+### 2. ⚠️ 360 AI 云盘 MCP 技能 (`360-ai-cloud-disk-mcp-skill`) - 【停止更新】
 
 基于 Python 执行器（`executor.py`）调用后端 MCP Server 接口。
 
@@ -29,7 +29,7 @@
 *   **执行方式**：Python 脚本 (`python3 executor.py <tool> ...`)
 *   **适用场景**：仅作为历史遗留系统的兼容保留。
 
-> 👉 [查看 MCP 技能的历史文档](./360AICloudDisk-skill/SKILL.md)
+> 👉 [查看 MCP 技能的历史文档](./360-ai-cloud-disk-mcp-skill/SKILL.md)
 
 ---
 
