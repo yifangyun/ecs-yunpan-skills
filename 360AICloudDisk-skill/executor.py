@@ -49,7 +49,7 @@ class MCPExecutor:
             # npx 模式：使用已安装的 npm 包
             self._check_npx_available()
             self.mcp_command = "npx"
-            npx_package = os.getenv("MCP_NPX_PACKAGE", "@aicloud360/mcp-server-disk@latest")
+            npx_package = os.getenv("MCP_NPX_PACKAGE", "@aicloud360/360-ai-cloud-disk-mcp@latest")
             self.mcp_args = [npx_package, "--stdio"]
             self.working_dir = None  # npx 不需要工作目录
             print(f"[MCP] 使用 npx 模式，包名: {npx_package}")
@@ -130,7 +130,7 @@ class MCPExecutor:
             }
 
         # 2) 使用临时执行器，避免修改当前实例 mode/command
-        npx_package = os.getenv("MCP_NPX_PACKAGE", "@aicloud360/mcp-server-disk@latest")
+        npx_package = os.getenv("MCP_NPX_PACKAGE", "@aicloud360/360-ai-cloud-disk-mcp@latest")
         print(f"[MCP] 工具 {tool_name} 需要访问本地文件系统，临时切换 npx 执行: {npx_package}")
 
         child = MCPExecutor()
