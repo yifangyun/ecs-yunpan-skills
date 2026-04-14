@@ -5,13 +5,13 @@
 默认推荐 npx（热更新）：
 
 ```bash
-npx -y -p @aicloud360/mcp-server-disk@latest 360disk <command>
+npx -y -p @aicloud360/360-ai-cloud-disk-cli@latest 360disk <command>
 ```
 
 回归测试 / CI 建议固定版本（可复现）：
 
 ```bash
-npx -y -p @aicloud360/mcp-server-disk@0.8.7 360disk <command>
+npx -y -p @aicloud360/360-ai-cloud-disk-cli@<exact-version> 360disk <command>
 ```
 
 说明：本文档中的 `360disk ...` 命令均可等价替换为上述 npx 形式。
@@ -19,7 +19,7 @@ npx -y -p @aicloud360/mcp-server-disk@0.8.7 360disk <command>
 建议先定义命令前缀，避免每行重复输入完整 npx：
 
 ```bash
-DISK_360_CLI='npx -y -p @aicloud360/mcp-server-disk@latest 360disk'
+DISK_360_CLI='npx -y -p @aicloud360/360-ai-cloud-disk-cli@latest 360disk'
 $DISK_360_CLI dir ls /
 ```
 
