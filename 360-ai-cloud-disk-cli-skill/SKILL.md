@@ -54,8 +54,16 @@ DISK_360_CLI='npx -y -p @aicloud360/360-ai-cloud-disk-cli@<exact-version> 360dis
 | 通过 URL 或文本保存文件到云盘 | `$DISK_360_CLI file save --url/--content/--stdin` |
 | 向云盘文本文件末尾追加内容 | `$DISK_360_CLI file append <path> --content/--stdin` |
 | 检测目录下是否存在同名文件 | `$DISK_360_CLI file exists --path <path> --files/--stdin` |
+| 微信扫码登录（无 API Key 时使用） | `$DISK_360_CLI auth login-wechat` |
+| 退出登录、清除本地配置 | `$DISK_360_CLI auth logout` |
 | 查看当前用户信息 | `$DISK_360_CLI user info` |
 | 查看鉴权状态 | `$DISK_360_CLI auth whoami` |
+| 将本地文件/目录备份到云盘 | `$DISK_360_CLI claw-backup --source <path> --dest <path>` |
+| OpenClaw 模式备份（按白名单） | `$DISK_360_CLI claw-backup --source-dir <path> --claw-name <name>` |
+| 将云盘目录递归恢复到本地 | `$DISK_360_CLI claw-restore --remote <path> --target <path>` |
+| 启用自动备份监听 | `$DISK_360_CLI claw-auto-backup enable --source-dir <path> --claw-name <name>` |
+| 停用自动备份监听 | `$DISK_360_CLI claw-auto-backup disable` |
+| 查看自动备份状态 | `$DISK_360_CLI claw-auto-backup status` |
 
 **详细的命令参数说明，请按需查阅 [references/commands.md](references/commands.md)。**
 

@@ -66,13 +66,36 @@ $DISK_360_CLI dir ls /
 
 查看当前鉴权状态（API Key 部分脱敏）。
 
+### auth login-wechat
+
+```bash
+360disk auth login-wechat [--qr-mode <mode>] [--qr-file <path>] [--timeout <sec>] [--interval <ms>]
+```
+
+使用微信扫码登录（适用于无 API Key 场景）。
+
+| 参数 | 必填 | 说明 | 默认值 |
+|---|---|---|---|
+| `--qr-mode <mode>` | 否 | 二维码呈现方式：`terminal`（终端字符码）或 `file`（PNG 文件） | `terminal` |
+| `--qr-file <path>` | 否 | 与 `--qr-mode=file` 联用，指定 PNG 输出路径（未指定则写入系统临时目录） | — |
+| `--timeout <sec>` | 否 | 轮询总超时秒数 | `120` |
+| `--interval <ms>` | 否 | 轮询间隔毫秒 | `1500` |
+
+> ```bash
+> # 在终端显示字符二维码
+> 360disk auth login-wechat
+>
+> # 生成 PNG 二维码文件
+> 360disk auth login-wechat --qr-mode file --qr-file /tmp/qr.png
+> ```
+
 ### auth logout
 
 ```bash
 360disk auth logout
 ```
 
-清除本地配置文件。
+停止自动备份监听并清除本地配置文件。
 
 ---
 
@@ -535,6 +558,104 @@ $DISK_360_CLI dir ls /
 | `API_KEY` | 云盘 API 密钥 | — |
 | `ECS_ENV` | 环境（`prod` / `test`） | `prod` |
 | `SUB_CHANNEL` | 子渠道标识 | `open` |
+
+---
+
+## claw-backup — 本地备份到云盘
+
+```bash
+360disk claw-backup --source <path> --dest <path> [--force]
+360disk claw-backup --source-dir <path> --claw-name <name> [--force]
+```
+
+两种使用模式（互斥）：
+
+| 模式 | 参数组合 | 说明 |
+|---|---|---|
+| 标准备份 | `--source` + `--dest` | 将单个本地文件或目录上传到指定云盘目录 |
+| OpenClaw 模式 | `--source-dir` + `--claw-name` | 按 OpenClaw 白名单配置，只备份特定目录和文件 |
+
+| 参数 | 必填 | 说明 |
+|---|---|---|
+| `--source <path>` | 互斥 | 本地源文件或目录（标准备份模式） |
+| `--dest <path>` | 互斥 | 云盘目标目录（标准备份模式，以 `/` 结尾） |
+| `--source-dir <path>` | 互斥 | OpenClaw 本地根目录（OpenClaw 模式） |
+| `--claw-name <name>` | 互斥 | 云盘中的 OpenClaw 备份目录名（OpenClaw 模式） |
+| `--force` | 否 | 强制上传文件，跳过本地增量数据库比对；上传成功后仍更新数据库 |
+
+> **说明**：`claw-backup` 内置增量比对（基于本地 SQLite 数据库），默认只上传变更文件。`--force` 可跳过比对强制全量上传。
+>
+> ```bash
+> # 标准备份：将本地 ~/.cc-switch 目录备份到云盘 /cc-switch-backup/
+> 360disk claw-backup --source ~/.cc-switch --dest /cc-switch-backup/
+>
+> # OpenClaw 模式备份
+> 360disk claw-backup --source-dir ~/.cc-switch --claw-name cc-switch-backup
+>
+> # 强制全量备份（跳过增量比对）
+> 360disk claw-backup --source ~/.cc-switch --dest /cc-switch-backup/ --force
+> ```
+
+---
+
+## claw-restore — 云盘恢复到本地
+
+```bash
+360disk claw-restore --remote <path> --target <path>
+```
+
+| 参数 | 必填 | 说明 |
+|---|---|---|
+| `--remote <path>` | 是 | 云盘源目录（以 `/` 开头） |
+| `--target <path>` | 是 | 本地目标目录（不存在时自动创建） |
+
+> ```bash
+> # 将云盘 /cc-switch-backup/ 递归恢复到本地 ~/.cc-switch-restored
+> 360disk claw-restore --remote /cc-switch-backup/ --target ~/.cc-switch-restored
+> ```
+
+---
+
+## claw-auto-backup — 自动备份监听
+
+自动监听本地目录变化并实时同步到云盘（后台守护进程）。
+
+### claw-auto-backup enable
+
+```bash
+360disk claw-auto-backup enable --source-dir <path> --claw-name <name> [--event-log <path>]
+```
+
+| 参数 | 必填 | 说明 |
+|---|---|---|
+| `--source-dir <path>` | 是 | 监听的本地根目录（只能是一个目录） |
+| `--claw-name <name>` | 是 | 云盘中的 OpenClaw 备份目录名 |
+| `--event-log <path>` | 否 | 自动备份事件日志文件路径；仅传入时才写日志 |
+
+> **说明**：`enable` 会在后台启动守护进程并写入状态文件，进程与当前 shell 会话解耦，关闭终端后仍持续运行。
+> ```bash
+> # 启用自动备份
+> 360disk claw-auto-backup enable --source-dir ~/.cc-switch --claw-name cc-switch-backup
+>
+> # 启用并记录事件日志
+> 360disk claw-auto-backup enable --source-dir ~/.cc-switch --claw-name cc-switch-backup --event-log ~/auto-backup.log
+> ```
+
+### claw-auto-backup disable
+
+```bash
+360disk claw-auto-backup disable
+```
+
+停用自动备份监听，终止后台守护进程并更新状态文件。
+
+### claw-auto-backup status
+
+```bash
+360disk claw-auto-backup status
+```
+
+查看当前自动备份状态，返回 `enabled`、`pid`、上次备份时间、`watch_pairs` 等信息。
 
 ---
 
