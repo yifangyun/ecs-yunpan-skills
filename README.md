@@ -83,6 +83,7 @@ ecs-yunpan-skills/
 ├── README.md                          # 本文件
 ├── 360-ai-cloud-disk-cli-skill/       # 360disk CLI Skill
 ├── agentdrive-cli-skill/              # agentdrive CLI Skill
+├── agentdrive-backup-skill/           # agentdrive 备份技能
 └── 360-ai-cloud-disk-mcp-skill/       # MCP Skill（停止更新）
 ```
 
