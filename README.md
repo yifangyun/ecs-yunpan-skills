@@ -52,7 +52,19 @@ curl -O http://cn-zhengzhou-3.xstore.qihu.com/yunpan-zz2-pkg/agentdrive-cli-skil
 
 两套 Skill 的 MCP 工具能力相同，**不要混用同一套本地配置目录**（除非有意共用 `AI_CLOUD_DISK_CONFIG_DIR`）。
 
-### 3. ⚠️ 360 AI 云盘 MCP 技能 (`360-ai-cloud-disk-mcp-skill`) - 【停止更新】
+### 3. 🔁 AgentDrive 备份技能 (`agentdrive-backup-skill`)
+
+面向龙虾（AI Agent）的**根目录云端备份**专用技能，基于 `agentdrive` CLI 实现一键备份 + 自动监听 + 保活 crontab。
+
+| 项目 | 说明 |
+|---|---|
+| **命令名** | `agentdrive` |
+| **npm 包** | `@aicloud360/agentdrive` |
+| **备份路径规范** | `/<龙虾名称>/` |
+| **适用场景** | 龙虾（AI Agent）把自身根目录安全备份到 AgentDrive 云端 |
+| **核心能力** | 微信扫码/手机号登录 · 根目录自动识别（特征打分）· 首轮备份 · 自动监听 · crontab 保活 |
+
+### 4. ⚠️ 360 AI 云盘 MCP 技能 (`360-ai-cloud-disk-mcp-skill`) - 【停止更新】
 
 基于 Python 执行器（`executor.py`）调用后端 MCP Server 接口。
 
